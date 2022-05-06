@@ -1,15 +1,28 @@
+import 'dart:developer';
 import 'dart:ffi';
+//import 'dart:html';
 //import 'dart:html';
 import 'dart:io';
 
+import 'package:erneuerung/FeedScreen.dart';
+import 'package:erneuerung/StorageManager.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'parser.dart';
-//import 'package:xml/xml.dart';
+import 'package:xml/xml.dart';
 
 void main() {
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -40,25 +53,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  BigInt _counter = BigInt.from(1);
-  BigInt _input = BigInt.from(0);
+  String imageUrl = 'https://media.giphy.com/media/l3diT8stVH9qImalO/giphy.gif';
+  final streamUrlController = TextEditingController();
+  Zergliederung stream = Zergliederung();
 
-  void _incrementCounter() {
+
+
+  void _addFeed() async{
+
+    //z = await Zergliederung.create('https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss');
+    stream = await Zergliederung.create('https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss');
+    imageUrl = stream.channelImageUrl;
     AudioPlayer audioPlayer = AudioPlayer();
     //audioPlayer.setUrl('https://www.smurado.de/KK/KKX6.mp3');
-    audioPlayer.setUrl('https://www.smurado.de/Song.mp3');
+    //audioPlayer.setUrl('https://www.smurado.de/Song.mp3');
+    //audioPlayer.setVolume(1);
+    audioPlayer.setUrl(stream.itemList[3].itemUrl);
+
     audioPlayer.resume();
-    sleep(Duration(seconds: 3));
+    sleep(Duration(seconds: 15));
     audioPlayer.stop();
 
-    Zergliederung test = Zergliederung(channelDescription: "sdf", channelImageUrl: "test", channelLink: "test", channelTitle: "test");
-    Item neu = Item();
-    test.itemlist.add(neu);
-
-
-    setState(() {
-      _counter += _input;
-    });
   }
 
   @override
@@ -68,33 +83,26 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
+
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Hallo Welt, bringt mich zu eurem Anführer',
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '$_counter',
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .headline4,
-                ),
-                TextField(
-                  keyboardType: TextInputType.number,
-                  onChanged: (text)
-                  {
-                    _input = BigInt.parse(text);
-                  },
-                ),
-              ],
-            ),
-            Image.network('https://tenor.com/view/guess-whos-back-shrug-gif-11192287.gif')
+            SizedBox(
 
+              child: TextField(
+                controller: streamUrlController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder()
+                ),
+
+              ),
+
+              width: 300,
+            ),
+            //Text("https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss"),
+
+            //Image.network('https://media.giphy.com/media/l3diT8stVH9qImalO/giphy.gif')
+            //Image.network('$imageUrl')
 
           ],
         ),
@@ -107,7 +115,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
         children: [
           FloatingActionButton(
-            onPressed: _incrementCounter,
+            //onPressed: _addFeed,
+            onPressed: () async {
+              //String q = streamUrlController.text;
+              setState(() {
+                //StorageManager.saveData("url", streamUrlController.text);
+                StorageManager.saveData("Zergliederung", stream);
+              });
+              var a = await Zergliederung.create("https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss");
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FeedScreen(streamer: a,))
+              );
+            },
             tooltip: 'Increment',
             child: const Icon(Icons.add),
           ),
