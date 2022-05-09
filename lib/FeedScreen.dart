@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:erneuerung/StorageManager.dart';
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/services.dart';
 import 'parser.dart';
 import 'dart:io';
@@ -15,7 +16,9 @@ class FeedScreen extends StatefulWidget {
   FeedScreen( {Key? key, required this.streamer}) : super(key: key);
 
   Zergliederung streamer;
+  String currentTitle = "";
   AudioPlayer audioPlayer = AudioPlayer();
+
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
@@ -34,20 +37,32 @@ class _FeedScreenState extends State<FeedScreen> {
 
   String imageUrl = 'https://media.giphy.com/media/l3diT8stVH9qImalO/giphy.gif';
 
-
   void audio(String URL) {
     widget.audioPlayer.pause();
     widget.audioPlayer.setUrl(URL);
     widget.audioPlayer.resume();
-    //widget.audioPlayer.stop();
   }
 
-  void audiobutton(){
-    if(widget.audioPlayer.state.toString() == "PlayerState.STOPPED"){
+  IconButton audioButton(){
+
+    if(widget.audioPlayer.state == PlayerState.PAUSED){
+      return IconButton(icon: Icon(Icons.play_arrow), onPressed: () {
+        widget.audioPlayer.resume();
+        setState(() {
+        });
+        },
+      );
 
     }
+    else {
+      return IconButton(icon: Icon(Icons.pause), onPressed: () {
+        widget.audioPlayer.pause();
+        setState(() {
+        });
+      },
+      );
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +86,9 @@ class _FeedScreenState extends State<FeedScreen> {
                   (context, index) => ListTile(
                       onTap: () {
                         audio(widget.streamer!.itemList![index].itemUrl);
+                        widget.currentTitle = widget.streamer!.itemList![index].itemTitle;
+                        setState(() {
+                        });
                         },
                       title: Text(widget.streamer!.itemList![index].itemTitle)),
 
@@ -83,9 +101,19 @@ class _FeedScreenState extends State<FeedScreen> {
         child: Row(
           children: [
             Spacer(),
-            Text("",textAlign: TextAlign.center),
+                Expanded(child:
+                Container(
+                  padding: EdgeInsets.only(right: 13.0),
+                  child: Text(
+                  widget.currentTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.justify,
+                  ),
+                ),
+                ),
             Spacer(),
-            IconButton(icon: Icon(Icons.play_arrow), onPressed: () {log(widget.audioPlayer.state.toString());}),
+            audioButton(),
           ],
         ),
       ),

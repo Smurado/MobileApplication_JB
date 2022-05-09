@@ -8,6 +8,7 @@ import 'package:erneuerung/FeedScreen.dart';
 import 'package:erneuerung/StorageManager.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:flutter/services.dart';
 import 'parser.dart';
 import 'package:xml/xml.dart';
@@ -55,11 +56,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String imageUrl = 'https://media.giphy.com/media/l3diT8stVH9qImalO/giphy.gif';
   final streamUrlController = TextEditingController();
+
   Zergliederung stream = Zergliederung();
 
 
 
-  void _addFeed() async{
+  /*void _addFeed() async{
 
     //z = await Zergliederung.create('https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss');
     stream = await Zergliederung.create('https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss');
@@ -74,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
     sleep(Duration(seconds: 15));
     audioPlayer.stop();
 
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -99,11 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
               width: 300,
             ),
-            //Text("https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss"),
-
-            //Image.network('https://media.giphy.com/media/l3diT8stVH9qImalO/giphy.gif')
-            //Image.network('$imageUrl')
-
           ],
         ),
       ),
@@ -125,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
               var a = await Zergliederung.create("https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss");
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FeedScreen(streamer: a,))
+                  MaterialPageRoute(builder: (context) => FeedScreen(streamer: a))
               );
             },
             tooltip: 'Increment',
