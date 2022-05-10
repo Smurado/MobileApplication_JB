@@ -59,25 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Zergliederung stream = Zergliederung();
 
-
-
-  /*void _addFeed() async{
-
-    //z = await Zergliederung.create('https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss');
-    stream = await Zergliederung.create('https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss');
-    imageUrl = stream.channelImageUrl;
-    AudioPlayer audioPlayer = AudioPlayer();
-    //audioPlayer.setUrl('https://www.smurado.de/KK/KKX6.mp3');
-    //audioPlayer.setUrl('https://www.smurado.de/Song.mp3');
-    //audioPlayer.setVolume(1);
-    audioPlayer.setUrl(stream.itemList[3].itemUrl);
-
-    audioPlayer.resume();
-    sleep(Duration(seconds: 15));
-    audioPlayer.stop();
-
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,7 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 //StorageManager.saveData("url", streamUrlController.text);
                 StorageManager.saveData("Zergliederung", stream);
               });
-              var a = await Zergliederung.create("https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss");
+              //https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss
+              var a = await Zergliederung.create("https://www.smurado.de/feed.xml");
+              //hier das create aendern auf den Controller
               Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => FeedScreen(streamer: a))

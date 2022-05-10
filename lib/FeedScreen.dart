@@ -1,23 +1,14 @@
-//import 'dart:html';
-
-import 'dart:developer';
-
-import 'package:erneuerung/StorageManager.dart';
 import 'package:flutter/material.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/services.dart';
 import 'parser.dart';
 import 'dart:io';
-import 'package:erneuerung/FeedScreen.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FeedScreen extends StatefulWidget {
   FeedScreen( {Key? key, required this.streamer}) : super(key: key);
 
   Zergliederung streamer;
   String currentTitle = "";
-  AudioPlayer audioPlayer = AudioPlayer();
+  //AudioPlayer audioPlayer = AudioPlayer();
 
 
   @override
@@ -32,33 +23,28 @@ class MyHttpOverrides extends HttpOverrides{
   }
 }
 
-
 class _FeedScreenState extends State<FeedScreen> {
-
-  String imageUrl = 'https://media.giphy.com/media/l3diT8stVH9qImalO/giphy.gif';
+  AudioPlayer audioPlayer = AudioPlayer();
+  bool isplaying = false;
 
   void audio(String URL) {
-    widget.audioPlayer.pause();
-    widget.audioPlayer.setUrl(URL);
-    widget.audioPlayer.resume();
+    audioPlayer.stop();
+    audioPlayer.setUrl(URL);
+    audioPlayer.resume();
   }
 
   IconButton audioButton(){
-
-    if(widget.audioPlayer.state == PlayerState.PAUSED){
+    if(!isplaying){
       return IconButton(icon: Icon(Icons.play_arrow), onPressed: () {
-        widget.audioPlayer.resume();
-        setState(() {
-        });
+        audioPlayer.resume();
+        setState((){isplaying = !isplaying;});
         },
       );
-
     }
     else {
       return IconButton(icon: Icon(Icons.pause), onPressed: () {
-        widget.audioPlayer.pause();
-        setState(() {
-        });
+        audioPlayer.pause();
+        setState(() {isplaying = !isplaying;});
       },
       );
     }
@@ -87,8 +73,7 @@ class _FeedScreenState extends State<FeedScreen> {
                       onTap: () {
                         audio(widget.streamer!.itemList![index].itemUrl);
                         widget.currentTitle = widget.streamer!.itemList![index].itemTitle;
-                        setState(() {
-                        });
+                        setState(() {isplaying = true;});
                         },
                       title: Text(widget.streamer!.itemList![index].itemTitle)),
 
