@@ -1,29 +1,11 @@
-import 'dart:developer';
-import 'dart:ffi';
-//import 'dart:html';
-//import 'dart:html';
 import 'dart:io';
-
 import 'package:erneuerung/FeedScreen.dart';
 import 'package:erneuerung/StorageManager.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:flutter/services.dart';
 import 'parser.dart';
-import 'package:xml/xml.dart';
 
 void main() {
-  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
-}
-
-class MyHttpOverrides extends HttpOverrides{
-  @override
-  HttpClient createHttpClient(SecurityContext? context){
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -45,18 +27,13 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-
-  final String title;
-
+    final String title;
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String imageUrl = 'https://media.giphy.com/media/l3diT8stVH9qImalO/giphy.gif';
   final streamUrlController = TextEditingController();
-
   Zergliederung stream = Zergliederung();
 
   @override
@@ -66,42 +43,33 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
-
+              //Textfield for the Input of the Link URL
               child: TextField(
+                //controller for the text to receive it later in the code
                 controller: streamUrlController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder()
                 ),
-
               ),
-
               width: 300,
             ),
           ],
         ),
       ),
 
-
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.min,
-
         children: [
+          //add button for adding a feed
           FloatingActionButton(
-            //onPressed: _addFeed,
             onPressed: () async {
-              //String q = streamUrlController.text;
-              setState(() {
-                //StorageManager.saveData("url", streamUrlController.text);
-                StorageManager.saveData("Zergliederung", stream);
-              });
-              //https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss
-              var a = await Zergliederung.create("https://www.smurado.de/feed.xml");
+              setState(() {StorageManager.saveData("Zergliederung", stream);});
+              var a = await Zergliederung.create("https://cdn.julephosting.de/podcasts/126-gamestar-podcast/feed.rss");
               //hier das create aendern auf den Controller
               Navigator.push(
                   context,

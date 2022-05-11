@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'parser.dart';
-import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -8,42 +7,39 @@ class FeedScreen extends StatefulWidget {
 
   Zergliederung streamer;
   String currentTitle = "";
-  //AudioPlayer audioPlayer = AudioPlayer();
-
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
-}
-
-class MyHttpOverrides extends HttpOverrides{
-  @override
-  HttpClient createHttpClient(SecurityContext? context){
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
-  }
 }
 
 class _FeedScreenState extends State<FeedScreen> {
   AudioPlayer audioPlayer = AudioPlayer();
   bool isplaying = false;
 
+  //function for the initial press in the list of Streamitems
   void audio(String URL) {
     audioPlayer.stop();
     audioPlayer.setUrl(URL);
     audioPlayer.resume();
   }
 
+  //function for the Button in the lower AppBar
   IconButton audioButton(){
+    //check if the player is playing and resum if it is not
     if(!isplaying){
       return IconButton(icon: Icon(Icons.play_arrow), onPressed: () {
+        //resume audioplayer
         audioPlayer.resume();
+        //setstate to refresh the new icon
         setState((){isplaying = !isplaying;});
         },
       );
     }
     else {
       return IconButton(icon: Icon(Icons.pause), onPressed: () {
+        //pause audioplayer
         audioPlayer.pause();
+        //setstate to refresh the new icon
         setState(() {isplaying = !isplaying;});
       },
       );
@@ -65,28 +61,30 @@ class _FeedScreenState extends State<FeedScreen> {
                 ],
             ),
            ),
-            expandedHeight: 350,
+            expandedHeight: 350, //height for the image background of the streamimage
           ),
-          SliverList(
+          SliverList( //list for the itemlist
               delegate: SliverChildBuilderDelegate(
                   (context, index) => ListTile(
                       onTap: () {
-                        audio(widget.streamer!.itemList![index].itemUrl);
-                        widget.currentTitle = widget.streamer!.itemList![index].itemTitle;
+                        //call audio if pressing on a list item
+                        audio(widget.streamer.itemList[index].itemUrl);
+                        widget.currentTitle = widget.streamer.itemList[index].itemTitle;
+                        //setState and turn isplaying true
                         setState(() {isplaying = true;});
                         },
-                      title: Text(widget.streamer!.itemList![index].itemTitle)),
+                      title: Text(widget.streamer.itemList[index].itemTitle)),
 
                 childCount: widget.streamer.itemList.length,
               ),
           ),
         ],
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: BottomAppBar( //bottom bar with pause and unpause
         child: Row(
           children: [
             Spacer(),
-                Expanded(child:
+                Expanded(child: //text for the
                 Container(
                   padding: EdgeInsets.only(right: 13.0),
                   child: Text(
@@ -98,7 +96,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
                 ),
             Spacer(),
-            audioButton(),
+            audioButton(), //button based on streame type
           ],
         ),
       ),
